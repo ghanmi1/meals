@@ -4,13 +4,14 @@ import '../dummy_Data.dart';
 import '../widgets/mealItem.dart';
 
 class CategorieMeals extends StatelessWidget {
-  final String categoryid;
-  final String categorytitle;
-
-  CategorieMeals(this.categoryid, this.categorytitle);
+  static const routeName = '/categorieMeals';
 
   @override
   Widget build(BuildContext context) {
+    final routeArgs =
+        ModalRoute.of(context).settings.arguments as Map<String, String>;
+    final categorytitle = routeArgs['title'];
+    final categoryid = routeArgs['id'];
     final categoryMeals = DUMMY_MEALS.where((meal) {
       return meal.categories.contains(categoryid);
     }).toList();

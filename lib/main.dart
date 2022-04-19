@@ -1,10 +1,42 @@
+import 'package:first_app/screens/favorites.dart';
 import 'package:flutter/material.dart';
 
 import './screens/Splash_Screen.dart';
+import './screens/Categorie_Meals_Screen.dart';
+import './screens/Categorie_screen.dart';
+import './screens/Meals_DetailsScreen.dart';
+import './models/meals.dart';
+import 'dummy_Data.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final List<Meal> _favoriteMeals = [];
+
+  void _toggleFavorite(String mealId) {
+    final existantIndex =
+        _favoriteMeals.indexWhere((meal) => meal.id == mealId);
+
+    if (existantIndex >= 0) {
+      setState(() {
+        _favoriteMeals.removeAt(existantIndex);
+      });
+    } else {
+      setState(() {
+        _favoriteMeals.add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
+      });
+    }
+  }
+
+  bool _isMealFavorite(String id) {
+    return _favoriteMeals.any((element) => element.id == id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,7 +54,14 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'RobotoCondensed',
                 fontWeight: FontWeight.bold,
               ))),
-      home: SplashScreen(),
+      routes: {
+        '/': ((context) => SplashScreen()),
+        CategorieScreen.Routename: (ctx) => CategorieScreen(),
+        CategorieMeals.routeName: (context) => CategorieMeals(),
+        MealsDetailsScreen.routename: (context) =>
+            MealsDetailsScreen(_toggleFavorite, _isMealFavorite),
+        FavoriteScreen.routename: (context) => FavoriteScreen(_favoriteMeals),
+      },
     );
   }
 }

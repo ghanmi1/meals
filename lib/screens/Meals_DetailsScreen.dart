@@ -4,34 +4,36 @@ import '../widgets/meal_details.dart';
 import '../dummy_Data.dart';
 
 class MealsDetailsScreen extends StatelessWidget {
-  final String itemId;
-  final String itemTitle;
+  static const routename = '/MealsScreen';
 
-  MealsDetailsScreen(this.itemId, this.itemTitle);
-
+  final Function isFavorite;
+  final Function toggleFavorite;
+  MealsDetailsScreen(this.toggleFavorite, this.isFavorite);
   @override
   Widget build(BuildContext context) {
-    final detailsOfMeals = DUMMY_MEALS.where((meal) {
+    final routeArgs =
+        ModalRoute.of(context).settings.arguments as Map<String, String>;
+    final itemId = routeArgs['id'];
+    final itemTitle = routeArgs['title'];
+
+    final detailsOfMeals = DUMMY_MEALS.firstWhere((meal) {
       return meal.id == itemId;
-    }).toList();
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: Text(itemTitle),
       ),
-      body: ListView.builder(
-        itemBuilder: ((context, index) {
-          return MealDetails(
-            id: detailsOfMeals[index].id,
-            title: detailsOfMeals[index].title,
-            affordability: detailsOfMeals[index].affordability,
-            complexity: detailsOfMeals[index].complexity,
-            imageUrl: detailsOfMeals[index].imageUrl,
-            duration: detailsOfMeals[index].duration,
-            ingredients: detailsOfMeals[index].ingredients,
-          );
-        }),
-        itemCount: detailsOfMeals.length,
+      body: SingleChildScrollView(
+        child: MealDetails(
+          toggleFavorite: toggleFavorite,
+          isMealFavorite: isFavorite,
+          id: detailsOfMeals.id,
+          title: detailsOfMeals.title,
+          ingredients: detailsOfMeals.ingredients,
+          steps: detailsOfMeals.steps,
+          imageUrl: detailsOfMeals.imageUrl,
+        ),
       ),
     );
   }

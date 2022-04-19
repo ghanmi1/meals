@@ -56,12 +56,14 @@ class MealItem extends StatelessWidget {
   }
 
   void selectedMeal(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => MealsDetailsScreen(id, title)));
+    Navigator.of(context).pushNamed(MealsDetailsScreen.routename,
+        arguments: {'id': id, 'title': title});
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaqueryP =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return InkWell(
       onTap: () => selectedMeal(context),
       child: Card(
@@ -79,7 +81,7 @@ class MealItem extends StatelessWidget {
                   ),
                   child: Image.network(
                     imageUrl,
-                    height: 250,
+                    height: mediaqueryP * 0.4,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
@@ -115,7 +117,7 @@ class MealItem extends StatelessWidget {
                       children: [
                         Icon(Icons.schedule),
                         SizedBox(
-                          width: 6,
+                          width: MediaQuery.of(context).size.width * 0.02,
                         ),
                         Text('$duration min')
                       ],
@@ -124,7 +126,7 @@ class MealItem extends StatelessWidget {
                       children: [
                         Icon(Icons.work),
                         SizedBox(
-                          width: 6,
+                          width: MediaQuery.of(context).size.width * 0.02,
                         ),
                         Text(complexityText)
                       ],
@@ -133,7 +135,7 @@ class MealItem extends StatelessWidget {
                       children: [
                         Icon(Icons.attach_money),
                         SizedBox(
-                          width: 6,
+                          width: MediaQuery.of(context).size.width * 0.02,
                         ),
                         Text(affordabilityText)
                       ],

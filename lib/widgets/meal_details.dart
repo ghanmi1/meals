@@ -1,65 +1,28 @@
 import 'package:flutter/material.dart';
 
-import '../models/meals.dart';
-
 class MealDetails extends StatelessWidget {
   final String id;
   final String title;
   final String imageUrl;
-  final int duration;
-  final Complexity complexity;
-  final Affordability affordability;
   final List<String> ingredients;
   final List<String> steps;
+  final Function toggleFavorite;
+  final Function isMealFavorite;
 
-  MealDetails(
-      {this.affordability,
-      this.ingredients,
-      this.steps,
-      this.id,
-      this.complexity,
-      this.duration,
-      this.imageUrl,
-      this.title});
-
-  String get complexityText {
-    switch (complexity) {
-      case Complexity.Simple:
-        return 'Simple';
-        break;
-
-      case Complexity.Challenging:
-        return 'Chalenging';
-        break;
-
-      case Complexity.Hard:
-        return 'hard';
-        break;
-      default:
-        return 'unknown ';
-    }
-  }
-
-  String get affordabilityText {
-    switch (affordability) {
-      case Affordability.Affordable:
-        return 'Affordable';
-        break;
-
-      case Affordability.Luxurious:
-        return 'Luxurious';
-        break;
-
-      case Affordability.Pricey:
-        return 'Pricey';
-        break;
-      default:
-        return 'unknown ';
-    }
-  }
+  MealDetails({
+    this.toggleFavorite,
+    this.isMealFavorite,
+    this.ingredients,
+    this.steps,
+    this.id,
+    this.imageUrl,
+    this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final mediaqueryP =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Column(
       children: [
         Card(
@@ -67,100 +30,92 @@ class MealDetails extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           elevation: 4,
           margin: EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: Image.network(
-                      imageUrl,
-                      height: 250,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 6,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.black54,
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                        softWrap: true,
-                        overflow: TextOverflow.fade,
-                      ),
-                    ),
-                  ),
-                ],
+          child: Stack(children: [
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
               ),
-              Padding(
-                padding: EdgeInsets.all(15),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.schedule),
-                          SizedBox(
-                            width: 6,
-                          ),
-                          Text('$duration min')
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.work),
-                          SizedBox(
-                            width: 6,
-                          ),
-                          Text(complexityText)
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.attach_money),
-                          SizedBox(
-                            width: 6,
-                          ),
-                          Text(affordabilityText)
-                        ],
-                      )
-                    ]),
-              )
-            ],
+              child: Image.network(
+                imageUrl,
+                height: mediaqueryP * 0.4,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+                top: 5,
+                right: 5,
+                child: FlatButton(
+                  child: Icon(
+                    isMealFavorite(id) ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.red,
+                  ),
+                  onPressed: () => toggleFavorite(id),
+                ))
+          ]),
+        ),
+        SizedBox(
+          height: mediaqueryP * 0.01,
+        ),
+        Container(
+          child: Text(
+            'Ingredients',
+            style: Theme.of(context).textTheme.headline6,
+            textAlign: TextAlign.left,
           ),
         ),
         SizedBox(
-          height: 6,
+          height: mediaqueryP * 0.01,
         ),
         Container(
-          margin: EdgeInsets.only(left: 20),
-          height: 200,
-          width: 100,
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(10),
+          height: mediaqueryP * 0.28,
+          width: double.infinity,
           child: ListView.builder(
             itemBuilder: (ctx, index) => Card(
-              child: Text(ingredients[index]),
+              elevation: 0,
+              color: Theme.of(context).canvasColor,
+              child: Text(
+                '-${ingredients[index]}',
+                textAlign: TextAlign.left,
+              ),
             ),
             itemCount: ingredients.length,
           ),
         ),
         SizedBox(
-          height: 6,
+          height: mediaqueryP * 0.01,
         ),
-        Container(),
+        Container(
+          child: Text(
+            'Steps',
+            style: Theme.of(context).textTheme.headline6,
+            textAlign: TextAlign.left,
+          ),
+        ),
+        SizedBox(
+          height: mediaqueryP * 0.01,
+        ),
+        Container(
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(10),
+          height: mediaqueryP * 0.28,
+          width: double.infinity,
+          child: ListView.builder(
+            itemBuilder: ((context, index) => Column(
+                  children: [
+                    ListTile(
+                      leading: CircleAvatar(
+                          child: FittedBox(child: Text('Step:${(index + 1)}'))),
+                      title: Text(steps[index]),
+                    )
+                  ],
+                )),
+            itemCount: steps.length,
+          ),
+        ),
       ],
     );
   }
